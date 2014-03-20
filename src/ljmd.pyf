@@ -1,0 +1,109 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module ljmd ! in 
+    interface  ! in :ljmd
+        module kinds ! in :ljmd:ljmd.f90
+            integer, private,public,parameter,optional :: sln=200
+            integer, private,public,parameter,optional :: dbl=selected_real_kind(14,200)
+            integer, private,public,parameter,optional :: sgl=selected_real_kind(6,30)
+        end module kinds
+        module physconst ! in :ljmd:ljmd.f90
+            use kinds
+            real(kind=8), private,public,parameter,optional :: mvsq2e=2390.05736153349_dbl
+            real(kind=8), private,public,parameter,optional :: kboltz=0.0019872067_dbl
+        end module physconst
+        module mdsys ! in :ljmd:ljmd.f90
+            use kinds
+            real(kind=8), pointer,dimension(:,:,:) :: frc
+            integer :: natoms
+            integer :: nthreads
+            real(kind=8) :: epsilon
+            real(kind=8), pointer,dimension(:,:) :: pos
+            real(kind=8) :: rcut
+            real(kind=8) :: dt
+            real(kind=8) :: ekin
+            real(kind=8) :: box
+            real(kind=8) :: temp
+            real(kind=8) :: epot
+            integer :: nfi
+            real(kind=8) :: mass
+            real(kind=8), pointer,dimension(:,:) :: vel
+            real(kind=8) :: sigma
+            integer :: nsteps
+        end module mdsys
+        module utils ! in :ljmd:ljmd.f90
+            use kinds
+            function pbc(x,boxby2,box) ! in :ljmd:ljmd.f90:utils
+                real(kind=8) intent(in) :: x
+                real(kind=8) intent(in) :: boxby2
+                real(kind=8) intent(in) :: box
+                real(kind=8) :: pbc
+            end function pbc
+        end module utils
+        module io ! in :ljmd:ljmd.f90
+            use kinds
+            integer, private,public,parameter,optional :: stdout_bn=6
+            integer, private,parameter,optional :: xyz=31
+            integer, private,public,parameter,optional :: stdin_bn=5
+            integer, private,parameter,optional :: log=30
+            subroutine getline(chan,line) ! in :ljmd:ljmd.f90:io
+                integer intent(in) :: chan
+                character*200 intent(out) :: line
+            end subroutine getline
+            subroutine ioopen(logname,xyzname) ! in :ljmd:ljmd.f90:io
+                character*200 :: logname
+                character*200 :: xyzname
+            end subroutine ioopen
+            subroutine ioclose ! in :ljmd:ljmd.f90:io
+            end subroutine ioclose
+            subroutine output ! in :ljmd:ljmd.f90:io
+                use mdsys
+            end subroutine output
+        end module io
+        module cell ! in :ljmd:ljmd.f90
+            use kinds
+            integer, private,public,pointer,dimension(:) :: npercell
+            integer, private,public :: npair
+            integer, private,public :: ncell
+            integer, private,public,pointer,dimension(:,:) :: clist
+            integer, private,public,pointer,dimension(:) :: plist
+            real(kind=8), private,parameter,optional :: cellrat=2.0_dbl
+            integer, private :: ngrid
+            real(kind=8), private :: dcell
+            integer, private :: nidx
+            integer, private,parameter,optional :: cellfreq=4
+            subroutine mkcell ! in :ljmd:ljmd.f90:cell
+                use utils
+                use mdsys
+                use io
+            end subroutine mkcell
+            subroutine updcell ! in :ljmd:ljmd.f90:cell
+                use utils
+                use mdsys
+                use io
+            end subroutine updcell
+            subroutine rmcell ! in :ljmd:ljmd.f90:cell
+            end subroutine rmcell
+        end module cell
+        subroutine getekin ! in :ljmd:ljmd.f90
+            use physconst
+            use mdsys, only: natoms,vel,mass,ekin,temp
+            use kinds
+        end subroutine getekin
+        subroutine force ! in :ljmd:ljmd.f90
+            use cell
+            use utils
+            use mdsys
+            use kinds
+        end subroutine force
+        subroutine velverlet ! in :ljmd:ljmd.f90
+            use physconst
+            use mdsys
+            use kinds
+        end subroutine velverlet
+    end interface 
+end python module ljmd
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/
